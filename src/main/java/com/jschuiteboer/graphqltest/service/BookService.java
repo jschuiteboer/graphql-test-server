@@ -1,0 +1,73 @@
+package com.jschuiteboer.graphqltest.service;
+
+import com.jschuiteboer.graphqltest.model.Author;
+import com.jschuiteboer.graphqltest.model.Book;
+import com.jschuiteboer.graphqltest.repository.BookRepository;
+import io.leangen.graphql.annotations.GraphQLArgument;
+import io.leangen.graphql.annotations.GraphQLMutation;
+import io.leangen.graphql.annotations.GraphQLQuery;
+import io.leangen.graphql.spqr.spring.annotation.GraphQLApi;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.CrossOrigin;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
+@CrossOrigin
+@GraphQLApi
+@Service
+public class BookService {
+    private final BookRepository bookRepository;
+
+    private final AuthorService authorService;
+
+    public BookService(BookRepository bookRepository, AuthorService authorService) {
+        this.bookRepository = bookRepository;
+        this.authorService = authorService;
+    }
+
+    @GraphQLQuery
+    public Iterable<Book> books() {
+        return bookRepository.findAll();
+    }
+
+    @GraphQLQuery
+    public Iterable<Book> booksByTitle(@GraphQLArgument(name="title") String title) {
+        return bookRepository.findAllByTitleContaining(title);
+    }
+
+    @GraphQLQuery
+    public Iterable<Book> booksByAuthorId(@GraphQLArgument(name="authorId") UUID authorId) {
+        Author author = authorService.authorById(authorId);
+
+        return author.getBooks();
+    }
+
+    @GraphQLQuery
+    public Iterable<Book> booksByAuthorName(@GraphQLArgument(name="authorName") String authorName) {
+        Iterable<Author> authors = authorService.authorsByName(authorName);
+
+        Set<Book> result = new HashSet<>();
+
+        for(Author author : authors) {
+            result.addAll(author.getBooks());
+        }
+
+        return result;
+    }
+
+    @GraphQLMutation
+    public Book createBook(
+            @GraphQLArgument(name="title") String title,
+            @GraphQLArgument(name="authorId") UUID authorId
+    ) {
+        Author author = authorService.authorById(authorId);
+
+        Book book = new Book();
+        book.setTitle(title);
+        book.setAuthor(author);
+
+        return bookRepository.save(book);
+    }
+}
