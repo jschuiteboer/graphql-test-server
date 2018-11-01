@@ -10,9 +10,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class InitTestData {
     @Bean
-    public ApplicationRunner init(AuthorService authorService, BookService bookRepository) {
+    public ApplicationRunner init(AuthorService authorService, BookService bookService) {
         return args -> {
-            createBookSeries(bookRepository, authorService.createAuthor("J.K. Rowling"),
+            createBookSeries(bookService, authorService.createAuthor("J.K. Rowling"),
                     "The Philosopher's Stone",
                     "The Chamber of Secrets",
                     "The Prisoner of Azkaban",
@@ -22,13 +22,13 @@ public class InitTestData {
                     "The Deathly Hallows"
             );
 
-            createBookSeries(bookRepository, authorService.createAuthor("Suzanne Collins"),
+            createBookSeries(bookService, authorService.createAuthor("Suzanne Collins"),
                     "The Hunger Games",
                     "Catching Fire",
                     "Mockingjay"
             );
 
-            createBookSeries(bookRepository, authorService.createAuthor("C. S. Lewis"),
+            createBookSeries(bookService, authorService.createAuthor("C. S. Lewis"),
                     "The Lion, the Witch and the Wardrobe" ,
                     "Prince Caspian" ,
                     "The Voyage of the Dawn Treader",
