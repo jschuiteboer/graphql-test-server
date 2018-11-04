@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -22,20 +20,29 @@ public class BookFilter implements Specification<Book> {
 
     @Override
     public Predicate toPredicate(Root<Book> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-        List<Predicate> filters = new ArrayList<>();
+        Predicate filter = builder.conjunction();
 
         if(title != null) {
-            filters.add(builder.like(root.get("title"), "%" + title + "%"));
+            filter = builder.and(filter, builder.like(
+                    builder.lower(root.get("title")),
+                    "%" + title.toLowerCase() + "%"
+            ));
         }
 
         if(authorId != null) {
-            filters.add(builder.equal(root.join("author").get("id"), authorId));
+            filter = builder.and(filter, builder.equal(
+                    root.join("author").get("id"),
+                    authorId
+            ));
         }
 
         if(authorName != null) {
-            filters.add(builder.like(root.join("author").get("name"), "%" + authorName + "%"));
+            filter = builder.and(filter, builder.like(
+                    builder.lower(root.join("author").get("name")),
+                    "%" + authorName.toLowerCase() + "%"
+            ));
         }
 
-        return builder.and(filters.toArray(new Predicate[0]));
+        return filter;
     }
 }
