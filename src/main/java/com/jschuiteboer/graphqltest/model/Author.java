@@ -21,8 +21,4 @@ public class Author {
 
     @OneToMany(mappedBy="author")
     private Collection<Book> books;
-
-    public Author(String name) {
-        this.setName(name);
-    }
 }

@@ -20,8 +20,4 @@ public class Book {
 
     @ManyToOne
     private Author author;
-
-    public Book(String title) {
-        this.setTitle(title);
-    }
 }
