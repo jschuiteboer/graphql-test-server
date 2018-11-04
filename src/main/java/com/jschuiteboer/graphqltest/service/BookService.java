@@ -27,25 +27,25 @@ public class BookService {
         this.authorService = authorService;
     }
 
-    @GraphQLQuery
-    public Iterable<Book> books() {
+    @GraphQLQuery(name = "books")
+    public Iterable<Book> getAllBooks() {
         return bookRepository.findAll();
     }
 
-    @GraphQLQuery
-    public Iterable<Book> booksByTitle(@GraphQLArgument(name="title") String title) {
+    @GraphQLQuery(name = "booksByTitle")
+    public Iterable<Book> getAllBooksByTitle(@GraphQLArgument(name="title") String title) {
         return bookRepository.findAllByTitleContaining(title);
     }
 
-    @GraphQLQuery
-    public Iterable<Book> booksByAuthorId(@GraphQLArgument(name="authorId") UUID authorId) {
+    @GraphQLQuery(name = "booksByAuthorId")
+    public Iterable<Book> getAllBooksByAuthorId(@GraphQLArgument(name="authorId") UUID authorId) {
         Author author = authorService.authorById(authorId);
 
         return author.getBooks();
     }
 
-    @GraphQLQuery
-    public Iterable<Book> booksByAuthorName(@GraphQLArgument(name="authorName") String authorName) {
+    @GraphQLQuery(name = "booksByAuthorName")
+    public Iterable<Book> getAllBooksByAuthorName(@GraphQLArgument(name="authorName") String authorName) {
         Iterable<Author> authors = authorService.authorsByName(authorName);
 
         Set<Book> result = new HashSet<>();
@@ -57,7 +57,7 @@ public class BookService {
         return result;
     }
 
-    @GraphQLMutation
+    @GraphQLMutation(name = "createBook")
     public Book createBook(
             @GraphQLArgument(name="title") String title,
             @GraphQLArgument(name="authorId") UUID authorId
