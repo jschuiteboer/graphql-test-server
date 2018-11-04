@@ -2,6 +2,7 @@ package com.jschuiteboer.graphqltest.service;
 
 import com.jschuiteboer.graphqltest.model.Author;
 import com.jschuiteboer.graphqltest.model.Book;
+import com.jschuiteboer.graphqltest.model.BookFilter;
 import com.jschuiteboer.graphqltest.repository.BookRepository;
 import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLMutation;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -28,8 +30,18 @@ public class BookService {
     }
 
     @GraphQLQuery(name = "books")
-    public Iterable<Book> getAllBooks() {
-        return bookRepository.findAll();
+    public List<Book> getAllBooks(
+        @GraphQLArgument(name="title") String title,
+        @GraphQLArgument(name="authorId") UUID authorId,
+        @GraphQLArgument(name="authorName") String authorName
+    ) {
+        BookFilter bookFilter = new BookFilter(title, authorId, authorName);
+        return bookRepository.findAll(bookFilter);
+    }
+
+    @GraphQLQuery(name = "filterBooks")
+    public List<Book> filterBooks(@GraphQLArgument(name="filter") BookFilter filter) {
+        return bookRepository.findAll(filter);
     }
 
     @GraphQLQuery(name = "booksByTitle")
