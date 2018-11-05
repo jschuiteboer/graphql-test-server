@@ -9,5 +9,4 @@ import java.util.UUID;
 
 @Repository
 public interface BookRepository extends CrudRepository<Book, UUID>, JpaSpecificationExecutor<Book> {
-    Iterable<Book> findAllByTitleContaining(String title);
 }

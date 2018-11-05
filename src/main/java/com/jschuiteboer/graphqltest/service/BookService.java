@@ -10,12 +10,9 @@ import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.spqr.spring.annotation.GraphQLApi;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
-import java.util.UUID;
 
-@CrossOrigin
 @GraphQLApi
 @Service
 public class BookService {
@@ -28,48 +25,23 @@ public class BookService {
         this.authorService = authorService;
     }
 
-    @GraphQLQuery(name = "booksByTitle")
-    public Iterable<Book> getAllBooksByTitle(@GraphQLArgument(name="title") String title) {
-        return bookRepository.findAllByTitleContaining(title);
-    }
-
     @GraphQLQuery(name = "books")
-    public List<Book> getAllBooks(
-            @GraphQLArgument(name="title") String title,
-            @GraphQLArgument(name="authorId") UUID authorId,
-            @GraphQLArgument(name="authorName") String authorName,
-            @GraphQLArgument(name="series") String series
-    ) {
-        BookFilter bookFilter = new BookFilter(title, authorId, authorName, series, null, null);
-
-        return getAllBooks(bookFilter);
-    }
-
-    @GraphQLQuery(name = "filterBooks")
     public List<Book> getAllBooks(@GraphQLArgument(name="filter") BookFilter filter) {
-        Sort sort = filter.getSort();
-        if(sort != null) {
-            return bookRepository.findAll(filter, sort);
-        } else {
-            return bookRepository.findAll(filter);
-        }
+        Sort sort = filter != null && filter.getSort() != null ? filter.getSort() : Sort.unsorted();
+
+        return bookRepository.findAll(filter, sort);
     }
 
     @GraphQLMutation(name = "createBook")
-    public Book createBook(
-            @GraphQLArgument(name="title") String title,
-            @GraphQLArgument(name="authorId") UUID authorId
+    public Book saveBook(
+            @GraphQLArgument(name="book") Book book
     ) {
-        Author author = authorService.getAuthorById(authorId);
+        //TODO: remove id from BookInput type
+        book.setId(null);
 
-        Book book = new Book();
-        book.setTitle(title);
+        Author author = this.authorService.getAuthorById(book.getAuthor().getId());
         book.setAuthor(author);
 
-        return this.saveBook(book);
-    }
-
-    public Book saveBook(Book book) {
         //TODO: validation
         return bookRepository.save(book);
     }
