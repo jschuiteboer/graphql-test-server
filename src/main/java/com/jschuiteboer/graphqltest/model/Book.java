@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
@@ -17,6 +18,10 @@ public class Book {
     private UUID id;
 
     private String title;
+
+    private String series;
+
+    private LocalDate publicationDate;
 
     @ManyToOne
     private Author author;

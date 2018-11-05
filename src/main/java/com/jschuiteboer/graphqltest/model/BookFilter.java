@@ -3,6 +3,7 @@ package com.jschuiteboer.graphqltest.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
@@ -17,6 +18,12 @@ public class BookFilter implements Specification<Book> {
     private UUID authorId;
 
     private String authorName;
+
+    private String series;
+
+    private String sortProperty;
+
+    private Sort.Direction sortDirection;
 
     @Override
     public Predicate toPredicate(Root<Book> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
@@ -43,6 +50,18 @@ public class BookFilter implements Specification<Book> {
             ));
         }
 
+        if(series != null) {
+            filter = builder.and(filter, builder.like(
+                    builder.lower(root.get("series")),
+                    "%" + series.toLowerCase() + "%"
+            ));
+        }
+
         return filter;
+    }
+
+    public Sort getSort() {
+        if(sortDirection == null || sortProperty == null) return null;
+        return new Sort(sortDirection, sortProperty);
     }
 }

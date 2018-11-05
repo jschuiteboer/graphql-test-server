@@ -8,12 +8,11 @@ import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLMutation;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.spqr.spring.annotation.GraphQLApi;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @CrossOrigin
@@ -29,44 +28,31 @@ public class BookService {
         this.authorService = authorService;
     }
 
-    @GraphQLQuery(name = "books")
-    public List<Book> getAllBooks(
-        @GraphQLArgument(name="title") String title,
-        @GraphQLArgument(name="authorId") UUID authorId,
-        @GraphQLArgument(name="authorName") String authorName
-    ) {
-        BookFilter bookFilter = new BookFilter(title, authorId, authorName);
-        return bookRepository.findAll(bookFilter);
-    }
-
-    @GraphQLQuery(name = "filterBooks")
-    public List<Book> filterBooks(@GraphQLArgument(name="filter") BookFilter filter) {
-        return bookRepository.findAll(filter);
-    }
-
     @GraphQLQuery(name = "booksByTitle")
     public Iterable<Book> getAllBooksByTitle(@GraphQLArgument(name="title") String title) {
         return bookRepository.findAllByTitleContaining(title);
     }
 
-    @GraphQLQuery(name = "booksByAuthorId")
-    public Iterable<Book> getAllBooksByAuthorId(@GraphQLArgument(name="authorId") UUID authorId) {
-        Author author = authorService.authorById(authorId);
+    @GraphQLQuery(name = "books")
+    public List<Book> getAllBooks(
+            @GraphQLArgument(name="title") String title,
+            @GraphQLArgument(name="authorId") UUID authorId,
+            @GraphQLArgument(name="authorName") String authorName,
+            @GraphQLArgument(name="series") String series
+    ) {
+        BookFilter bookFilter = new BookFilter(title, authorId, authorName, series, null, null);
 
-        return author.getBooks();
+        return getAllBooks(bookFilter);
     }
 
-    @GraphQLQuery(name = "booksByAuthorName")
-    public Iterable<Book> getAllBooksByAuthorName(@GraphQLArgument(name="authorName") String authorName) {
-        Iterable<Author> authors = authorService.authorsByName(authorName);
-
-        Set<Book> result = new HashSet<>();
-
-        for(Author author : authors) {
-            result.addAll(author.getBooks());
+    @GraphQLQuery(name = "filterBooks")
+    public List<Book> getAllBooks(@GraphQLArgument(name="filter") BookFilter filter) {
+        Sort sort = filter.getSort();
+        if(sort != null) {
+            return bookRepository.findAll(filter, sort);
+        } else {
+            return bookRepository.findAll(filter);
         }
-
-        return result;
     }
 
     @GraphQLMutation(name = "createBook")
@@ -74,12 +60,17 @@ public class BookService {
             @GraphQLArgument(name="title") String title,
             @GraphQLArgument(name="authorId") UUID authorId
     ) {
-        Author author = authorService.authorById(authorId);
+        Author author = authorService.getAuthorById(authorId);
 
         Book book = new Book();
         book.setTitle(title);
         book.setAuthor(author);
 
+        return this.saveBook(book);
+    }
+
+    public Book saveBook(Book book) {
+        //TODO: validation
         return bookRepository.save(book);
     }
 }
