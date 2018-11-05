@@ -21,18 +21,18 @@ public class AuthorService {
         this.repository = repository;
     }
 
-    @GraphQLQuery
-    public Iterable<Author> authors() {
+    @GraphQLQuery(name = "authors")
+    public Iterable<Author> getAllAuthors() {
         return repository.findAll();
     }
 
-    @GraphQLQuery
-    public Author authorById(@GraphQLArgument(name="id") UUID id) {
+    @GraphQLQuery(name = "authorsById")
+    public Author getAuthorById(@GraphQLArgument(name="id") UUID id) {
         return this.repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("invalid author id"));
     }
 
-    @GraphQLQuery
+    @GraphQLQuery(name = "authorsByName")
     public Iterable<Author> authorsByName(@GraphQLArgument(name="name") String name) {
         return this.repository.findByNameLike(name);
     }
