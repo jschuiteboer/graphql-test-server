@@ -1,9 +1,9 @@
 package com.jschuiteboer.graphqltest;
 
-import com.jschuiteboer.graphqltest.model.Author;
-import com.jschuiteboer.graphqltest.model.Book;
-import com.jschuiteboer.graphqltest.service.AuthorService;
-import com.jschuiteboer.graphqltest.service.BookService;
+import com.jschuiteboer.graphqltest.author.Author;
+import com.jschuiteboer.graphqltest.book.Book;
+import com.jschuiteboer.graphqltest.author.AuthorService;
+import com.jschuiteboer.graphqltest.book.BookService;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

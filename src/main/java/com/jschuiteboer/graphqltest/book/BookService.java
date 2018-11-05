@@ -1,9 +1,7 @@
-package com.jschuiteboer.graphqltest.service;
+package com.jschuiteboer.graphqltest.book;
 
-import com.jschuiteboer.graphqltest.model.Author;
-import com.jschuiteboer.graphqltest.model.Book;
-import com.jschuiteboer.graphqltest.model.BookFilter;
-import com.jschuiteboer.graphqltest.repository.BookRepository;
+import com.jschuiteboer.graphqltest.author.Author;
+import com.jschuiteboer.graphqltest.author.AuthorService;
 import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLMutation;
 import io.leangen.graphql.annotations.GraphQLQuery;

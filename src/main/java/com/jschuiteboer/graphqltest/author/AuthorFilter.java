@@ -1,4 +1,4 @@
-package com.jschuiteboer.graphqltest.model;
+package com.jschuiteboer.graphqltest.author;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
