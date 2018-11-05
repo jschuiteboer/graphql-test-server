@@ -25,7 +25,7 @@ public class BookService {
     }
 
     @GraphQLQuery(name = "books")
-    public List<Book> getAllBooks(@GraphQLArgument(name="filter") BookFilter filter) {
+    public List<Book> getBooks(@GraphQLArgument(name="filter") BookFilter filter) {
         Sort sort = filter != null && filter.getSort() != null ? filter.getSort() : Sort.unsorted();
 
         return bookRepository.findAll(filter, sort);
@@ -38,12 +38,20 @@ public class BookService {
     }
 
     @GraphQLMutation(name = "createBook")
-    public Book saveBook(@GraphQLArgument(name="book") Book book) {
-        //TODO: remove id from BookInput type
-        book.setId(null);
+    public Book saveBook(@GraphQLArgument(name="book") BookInput bookInput) {
 
-        Author author = this.authorService.getAuthorById(book.getAuthor().getId());
-        book.setAuthor(author);
+        List<Author> authors = this.authorService.getAuthors(bookInput.getAuthor());
+        if(authors.size() != 1) {
+            throw new IllegalArgumentException("author filter must match exactly 1 author");
+        }
+
+        Book book = new Book(
+                null,
+                bookInput.getTitle(),
+                bookInput.getSeries(),
+                bookInput.getPublicationDate(),
+                authors.get(0)
+        );
 
         //TODO: validation
         return bookRepository.save(book);

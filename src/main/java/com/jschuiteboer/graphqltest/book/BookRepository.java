@@ -1,6 +1,5 @@
 package com.jschuiteboer.graphqltest.book;
 
-import com.jschuiteboer.graphqltest.book.Book;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

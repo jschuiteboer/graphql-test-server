@@ -1,8 +1,9 @@
 package com.jschuiteboer.graphqltest;
 
 import com.jschuiteboer.graphqltest.author.Author;
-import com.jschuiteboer.graphqltest.book.Book;
+import com.jschuiteboer.graphqltest.author.AuthorFilter;
 import com.jschuiteboer.graphqltest.author.AuthorService;
+import com.jschuiteboer.graphqltest.book.BookInput;
 import com.jschuiteboer.graphqltest.book.BookService;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
@@ -13,9 +14,11 @@ public class InitTestData {
     @Bean
     public ApplicationRunner init(AuthorService authorService, BookService bookService) {
         return args -> {
-            createBookSeries(bookService,
-                    "Harry Potter",
-                    authorService.createAuthor("J.K. Rowling"),
+            authorService.createAuthor("J.K. Rowling");
+            authorService.createAuthor("Suzanne Collins");
+            authorService.createAuthor("C. S. Lewis");
+
+            createBookSeries(bookService,"Harry Potter", "J.K. Rowling",
                     "The Philosopher's Stone",
                     "The Chamber of Secrets",
                     "The Prisoner of Azkaban",
@@ -25,17 +28,13 @@ public class InitTestData {
                     "The Deathly Hallows"
             );
 
-            createBookSeries(bookService,
-                    "The Hunger Games",
-                    authorService.createAuthor("Suzanne Collins"),
+            createBookSeries(bookService, "The Hunger Games", "Suzanne Collins",
                     "The Hunger Games",
                     "Catching Fire",
                     "Mockingjay"
             );
 
-            createBookSeries(bookService,
-                    "The Chronicles of Narnia",
-                    authorService.createAuthor("C. S. Lewis"),
+            createBookSeries(bookService, "The Chronicles of Narnia", "C. S. Lewis",
                     "The Lion, the Witch and the Wardrobe" ,
                     "Prince Caspian" ,
                     "The Voyage of the Dawn Treader",
@@ -47,11 +46,11 @@ public class InitTestData {
         };
     }
 
-    private void createBookSeries(BookService bookService, String series, Author author, String...bookTitles) {
+    private void createBookSeries(BookService bookService, String series, String authorName, String...bookTitles) {
         for(String title : bookTitles) {
-            Book book = new Book();
+            BookInput book = new BookInput();
             book.setTitle(title);
-            book.setAuthor(author);
+            book.setAuthor(new AuthorFilter(authorName));
             book.setSeries(series);
             bookService.saveBook(book);
         }
