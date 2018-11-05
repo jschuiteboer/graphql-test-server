@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @GraphQLApi
 @Service
@@ -32,10 +33,14 @@ public class BookService {
         return bookRepository.findAll(filter, sort);
     }
 
+    @GraphQLQuery(name = "book")
+    public Book getBookById(@GraphQLArgument(name="id") UUID id) {
+        return this.bookRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("invalid book id"));
+    }
+
     @GraphQLMutation(name = "createBook")
-    public Book saveBook(
-            @GraphQLArgument(name="book") Book book
-    ) {
+    public Book saveBook(@GraphQLArgument(name="book") Book book) {
         //TODO: remove id from BookInput type
         book.setId(null);
 
