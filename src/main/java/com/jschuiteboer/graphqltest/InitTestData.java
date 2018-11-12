@@ -14,11 +14,11 @@ public class InitTestData {
     @Bean
     public ApplicationRunner init(AuthorService authorService, BookService bookService) {
         return args -> {
-            authorService.createAuthor("J.K. Rowling");
-            authorService.createAuthor("Suzanne Collins");
-            authorService.createAuthor("C. S. Lewis");
+            Author jkRowling = authorService.createAuthor("J.K. Rowling");
+            Author suzanneCollins = authorService.createAuthor("Suzanne Collins");
+            Author csLewis = authorService.createAuthor("C. S. Lewis");
 
-            createBookSeries(bookService,"Harry Potter", "J.K. Rowling",
+            createBookSeries(bookService,"Harry Potter", jkRowling,
                     "The Philosopher's Stone",
                     "The Chamber of Secrets",
                     "The Prisoner of Azkaban",
@@ -28,13 +28,13 @@ public class InitTestData {
                     "The Deathly Hallows"
             );
 
-            createBookSeries(bookService, "The Hunger Games", "Suzanne Collins",
+            createBookSeries(bookService, "The Hunger Games", suzanneCollins,
                     "The Hunger Games",
                     "Catching Fire",
                     "Mockingjay"
             );
 
-            createBookSeries(bookService, "The Chronicles of Narnia", "C. S. Lewis",
+            createBookSeries(bookService, "The Chronicles of Narnia", csLewis,
                     "The Lion, the Witch and the Wardrobe" ,
                     "Prince Caspian" ,
                     "The Voyage of the Dawn Treader",
@@ -46,11 +46,11 @@ public class InitTestData {
         };
     }
 
-    private void createBookSeries(BookService bookService, String series, String authorName, String...bookTitles) {
+    private void createBookSeries(BookService bookService, String series, Author author, String...bookTitles) {
         for(String title : bookTitles) {
             BookInput book = new BookInput();
             book.setTitle(title);
-            book.setAuthor(new AuthorFilter(authorName));
+            book.setAuthor(new AuthorFilter(author.getId(), author.getName()));
             book.setSeries(series);
             bookService.saveBook(book);
         }
