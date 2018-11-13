@@ -26,7 +26,7 @@ public class BookService {
 
     @GraphQLQuery(name = "books")
     public List<Book> getBooks(@GraphQLArgument(name="filter") BookFilter filter) {
-        Sort sort = filter != null && filter.getSort() != null ? filter.getSort() : Sort.unsorted();
+        Sort sort = (filter != null && filter.getSort() != null) ? filter.getSort() : Sort.unsorted();
 
         return bookRepository.findAll(filter, sort);
     }
